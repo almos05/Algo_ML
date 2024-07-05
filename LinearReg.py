@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+from sklearn.linear_model import LinearRegression
 
 
 class MyLineReg:
@@ -30,16 +31,31 @@ class MyLineReg:
 
             self.weights -= self.learning_rate * gradient
 
+    def predict(self, X):
+        X.insert(0, 'Bias', np.ones(X.shape[0]))
+
+        return X.dot(self.weights).values
+
+
     def get_coef(self):
         return self.weights[1:]
 
 
 cls = MyLineReg()
+sk_cls = LinearRegression()
 
 x = pd.DataFrame({
     '_X1': [1, 2, 3, 4],
 })
 
+x_test = pd.DataFrame({
+    '_X1': [2, 3, 4, 5]
+})
+
 y = [2.3, 3.2, 4.5, 5.7]
 
 cls.fit(x, y, verbose=50)
+sk_cls.fit(x, y)
+
+print(cls.predict(x_test))
+print(sk_cls.predict(x_test))
