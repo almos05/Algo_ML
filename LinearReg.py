@@ -71,7 +71,7 @@ class MyLineReg(Metrics):
             if self.sgd_sample:
                 sample_rows_idx = random.sample(range(X.shape[0]), self.sgd_sample)
                 gradient = ((2 / self.sgd_sample) *
-                            (y_pred[sample_rows_idx] - y[sample_rows_idx]).dot(X.iloc[sample_rows_idx])
+                            (y_pred[sample_rows_idx] - y.iloc[sample_rows_idx]).dot(X.iloc[sample_rows_idx])
                             + self.l1_coef * np.sign(self.__weights) + 2 * self.l2_coef * self.__weights)
             else:
                 gradient = (2 / n) * (y_pred - y).dot(X) + self.l1_coef * np.sign(self.__weights) + 2 * self.l2_coef * self.__weights
