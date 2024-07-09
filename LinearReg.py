@@ -2,7 +2,6 @@ import random
 import types
 import pandas as pd
 import numpy as np
-from numpy import typing
 from sklearn.linear_model import LinearRegression
 from sklearn.linear_model import Lasso
 from sklearn.metrics import r2_score
