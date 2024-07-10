@@ -1,6 +1,8 @@
 import numpy as np
 import pandas as pd
 from sklearn.linear_model import LogisticRegression
+from sklearn.datasets import make_classification
+from sklearn.model_selection import train_test_split
 from scipy.special import expit
 
 
@@ -39,20 +41,34 @@ class MyLogReg:
             if verbose and i % verbose == 0:
                 print(f'{i + 1} | {log_loss.mean()}')
 
+    def predict_proba(self, X):
+        X = X.copy()
+        X.insert(0, 'Bias', np.ones(X.shape[0]))
+
+        z = np.dot(X, self.__weights)
+        y_pred = expit(z)
+
+        return y_pred
+
     def get_coef(self):
         return self.__weights[1:]
 
+    def predict(self, X):
+        temp = self.predict_proba(X)
+        return (temp > 0.5).astype(int)
 
-x_train = pd.DataFrame({'X1': [300, 320, 450, 120, 700, 100]})
-y_train = pd.Series([1, 0, 0, 1, 0, 1])
 
-x_test = pd.DataFrame({'X1': [1000, 290, 430, 270, 310, 200]})
+X, y = make_classification(n_samples=1000, n_features=20, n_informative=2, n_redundant=10, random_state=42)
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+X_train, X_test = pd.DataFrame(X_train), pd.DataFrame(X_test)
 
 sk_cls = LogisticRegression(max_iter=100)
-sk_cls.fit(x_train, y_train)
-sk_cls.predict(x_train)
+sk_cls.fit(X_train, y_train)
+sk_cls.predict(X_train)
 
-my_cls = MyLogReg()
-my_cls.fit(x_train, y_train, verbose=3)
-
-print('sk_cls:', sk_cls)
+my_cls = MyLogReg(n_iter=100)
+my_cls.fit(X_train, y_train, verbose=3)
+print(my_cls.predict_proba(X_train))
+print(my_cls.predict(X_train).mea)
