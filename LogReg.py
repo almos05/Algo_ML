@@ -3,17 +3,48 @@ import pandas as pd
 from sklearn.linear_model import LogisticRegression
 from sklearn.datasets import make_classification
 from sklearn.model_selection import train_test_split
+from sklearn.metrics import precision_score, recall_score, accuracy_score
 from scipy.special import expit
 
 
-class MyLogReg:
+class Metrics:
+    def __init__(self):
+        self._metrics = {
+            'accuracy': lambda y, y_pred: (y == y_pred).mean(),
+            'precision': self.__precision,
+            'recall': self.__recall,
+            'f1': self.__f1
+        }
+
+    @staticmethod
+    def __precision(y, y_pred):
+        tp = ((y == 1) & (y_pred == 1)).sum()
+        fp = ((y == 0) & (y_pred == 1)).sum()
+        return tp / (tp + fp)
+
+    @staticmethod
+    def __recall(y, y_pred):
+        tp = ((y == 1) & (y_pred == 1)).sum()
+        fn = ((y == 1) & (y_pred == 0)).sum()
+        return tp / (tp + fn)
+
+    def __f1(self, y, y_pred):
+        precision = self.__precision(y, y_pred)
+        recall = self.__recall(y, y_pred)
+        return None  # Change here
+
+
+class MyLogReg(Metrics):
     def __init__(self,
                  n_iter: int = 10,
-                 learning_rate=0.1
+                 learning_rate=0.1,
+                 metric=None
                  ):
+        super().__init__()
         self._n_iter = n_iter
         self._learning_rate = learning_rate
         self.__weights = None
+        self.__metric = metric
 
     def __str__(self):
         return f'MyLogReg class: n_iter={self._n_iter}, learning_rate={self._learning_rate}'
@@ -57,6 +88,9 @@ class MyLogReg:
         temp = self.predict_proba(X)
         return (temp > 0.5).astype(int)
 
+    def get_best_score(self, y, y_pred):
+        return self._metrics[self.__metric](y, y_pred)
+
 
 X, y = make_classification(n_samples=1000, n_features=20, n_informative=2, n_redundant=10, random_state=42)
 
@@ -68,7 +102,15 @@ sk_cls = LogisticRegression(max_iter=100)
 sk_cls.fit(X_train, y_train)
 sk_cls.predict(X_train)
 
-my_cls = MyLogReg(n_iter=100)
+my_cls = MyLogReg(n_iter=100, metric='recall')
 my_cls.fit(X_train, y_train, verbose=3)
-print(my_cls.predict_proba(X_train))
-print(my_cls.predict(X_train).mea)
+y_pred = my_cls.predict(X_train)
+
+print('accuracy:', accuracy_score(y_train, y_pred))
+print(my_cls.get_best_score(y_train, y_pred))
+
+print('\npresicion:', precision_score(y_train, y_pred))
+print(my_cls.get_best_score(y_train, y_pred))
+
+print('\nrecall:', recall_score(y_train, y_pred))
+print(my_cls.get_best_score(y_train, y_pred))
