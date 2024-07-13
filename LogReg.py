@@ -119,25 +119,21 @@ sk_cls = LogisticRegression(max_iter=1000)
 sk_cls.fit(X_train, y_train)
 y_pred_sk = sk_cls.predict(X_train)
 
-my_cls = MyLogReg(n_iter=1000, metric='roc_auc')
+my_cls = MyLogReg(n_iter=1000, metric='accuracy')
 my_cls.fit(X_train, y_train, verbose=20)
 y_pred = my_cls.predict(X_train)
 
 print('accuracy:', accuracy_score(y_train, y_pred_sk))
 print(my_cls.get_best_score())
 
-my_cls.metric = 'precision'
 print('\nprecision:', precision_score(y_train, y_pred_sk))
 print(my_cls.get_best_score())
 
-my_cls.metric = 'recall'
 print('\nrecall:', recall_score(y_train, y_pred_sk))
 print(my_cls.get_best_score())
 
-my_cls.metric = 'f1'
 print('\nf1:', f1_score(y_train, y_pred_sk))
 print(my_cls.get_best_score())
 
-my_cls.metric = 'roc_auc'
 print('\nroc_auc:', roc_auc_score(y_train, y_pred_sk))
 print(my_cls.get_best_score())
